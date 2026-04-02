@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ASERFINTEC | Control de Ahorro Energético</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="login-screen" id="loginScreen">
+    <div class="login-card">
+      <div class="creator-pill">
+        <img src="logo.png" alt="Logo ASERFINTEC" />
+        <span>Solución creada por ASERFINTEC</span>
+      </div>
+      <h1>Energy Save Control</h1>
+      <p class="login-text">Sistema web para seguimiento, análisis y control del ahorro energético por áreas, responsables y categorías.</p>
+      <form id="loginForm" class="login-form">
+        <label>Usuario
+          <input id="username" type="text" value="admin" required />
+        </label>
+        <label>Contraseña
+          <input id="password" type="password" value="1234" required />
+        </label>
+        <button type="submit" class="btn btn-primary">Ingresar al sistema</button>
+      </form>
+      <small class="login-help">Acceso demo: admin / 1234</small>
+    </div>
+  </div>
+
+  <div class="app-shell hidden" id="appShell">
+    <aside class="sidebar">
+      <div>
+        <div class="brand-block">
+          <img src="logo.png" alt="Logo ASERFINTEC" class="brand-logo" />
+          <div>
+            <h2>Energy Save</h2>
+            <p>ASERFINTEC · ASFT</p>
+          </div>
+        </div>
+        <div class="brand-caption">Plataforma para control del consumo, metas, desviaciones y costos energéticos.</div>
+
+        <nav class="menu">
+          <button class="menu-link active" data-section="dashboard">Dashboard</button>
+          <button class="menu-link" data-section="registros">Registros</button>
+          <button class="menu-link" data-section="reportes">Reportes</button>
+        </nav>
+      </div>
+
+      <div class="sidebar-bottom">
+        <div class="session-card">
+          <span>Usuario activo</span>
+          <strong id="activeUser">admin</strong>
+        </div>
+        <button id="themeToggle" class="btn btn-secondary btn-full">Cambiar diseño</button>
+        <button id="logoutBtn" class="btn btn-danger btn-full">Cerrar sesión</button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div>
+          <h1>Control de ahorro energético</h1>
+          <p>Seguimiento estadístico para toma de decisiones y control operativo.</p>
+        </div>
+        <div class="topbar-actions">
+          <button id="demoBtn" class="btn btn-secondary">Restaurar datos demo</button>
+          <button id="csvBtn" class="btn btn-secondary">Exportar CSV</button>
+          <button id="printBtn" class="btn btn-primary">Imprimir reporte</button>
+        </div>
+      </header>
+
+      <div class="creator-banner">
+        <img src="logo.png" alt="Logo creador" />
+        <div>
+          <strong>ASERFINTEC (ASFT)</strong>
+          <p>Diseño y desarrollo del sistema de control de ahorro energético.</p>
+        </div>
+      </div>
+
+      <section id="section-dashboard" class="section active">
+        <div class="kpi-grid">
+          <article class="kpi-card card">
+            <span>Consumo total</span>
+            <strong id="kpiConsumption">0 kWh</strong>
+            <small>Acumulado del periodo</small>
+          </article>
+          <article class="kpi-card card">
+            <span>Meta total</span>
+            <strong id="kpiTarget">0 kWh</strong>
+            <small>Objetivo definido</small>
+          </article>
+          <article class="kpi-card card">
+            <span>Ahorro / Desviación</span>
+            <strong id="kpiDelta">0 kWh</strong>
+            <small>Diferencia frente a la meta</small>
+          </article>
+          <article class="kpi-card card alert-card">
+            <span>Alertas</span>
+            <strong id="kpiAlerts">0</strong>
+            <small>Registros sobre meta</small>
+          </article>
+        </div>
+
+        <div class="chart-grid">
+          <article class="card chart-card chart-wide">
+            <div class="card-head">
+              <h3>Tendencia mensual</h3>
+              <p>Consumo real vs meta</p>
+            </div>
+            <div class="chart-box"><canvas id="trendChart"></canvas></div>
+          </article>
+
+          <article class="card chart-card">
+            <div class="card-head">
+              <h3>Consumo por categoría</h3>
+              <p>Distribución acumulada</p>
+            </div>
+            <div class="chart-box"><canvas id="categoryChart"></canvas></div>
+          </article>
+
+          <article class="card chart-card">
+            <div class="card-head">
+              <h3>Costo por área</h3>
+              <p>Participación del gasto</p>
+            </div>
+            <div class="chart-box"><canvas id="costChart"></canvas></div>
+          </article>
+        </div>
+
+        <article class="card insights-card">
+          <div class="card-head">
+            <h3>Hallazgos automáticos</h3>
+            <p>Resumen ejecutivo generado con los registros visibles</p>
+          </div>
+          <ul id="insightsList" class="insights-list"></ul>
+        </article>
+      </section>
+
+      <section id="section-registros" class="section">
+        <div class="records-layout">
+          <article class="card form-card">
+            <div class="card-head">
+              <h3>Registro de consumo</h3>
+              <p>Agregar, editar o actualizar información</p>
+            </div>
+            <form id="recordForm" class="form-grid">
+              <input type="hidden" id="recordId" />
+              <label>Fecha<input type="date" id="date" required /></label>
+              <label>Área / Equipo<input type="text" id="area" required placeholder="Ej. Agencia Matriz" /></label>
+              <label>Categoría
+                <select id="category" required>
+                  <option value="Iluminación">Iluminación</option>
+                  <option value="Climatización">Climatización</option>
+                  <option value="Equipos">Equipos</option>
+                  <option value="Producción">Producción</option>
+                  <option value="General">General</option>
+                </select>
+              </label>
+              <label>Consumo real (kWh)<input type="number" id="consumption" min="0" step="0.01" required /></label>
+              <label>Meta (kWh)<input type="number" id="target" min="0" step="0.01" required /></label>
+              <label>Costo (USD)<input type="number" id="cost" min="0" step="0.01" required /></label>
+              <label>Responsable<input type="text" id="owner" required placeholder="Nombre del responsable" /></label>
+              <label>Observaciones<textarea id="notes" rows="4" placeholder="Comentario del registro"></textarea></label>
+              <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Guardar registro</button>
+                <button class="btn btn-secondary" type="button" id="newBtn">Nuevo</button>
+              </div>
+            </form>
+          </article>
+
+          <article class="card table-card">
+            <div class="filters-row">
+              <input id="searchInput" type="text" placeholder="Buscar por área, categoría, responsable u observación" />
+              <select id="filterCategory"><option value="">Todas las categorías</option></select>
+              <select id="filterOwner"><option value="">Todos los responsables</option></select>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Área / Equipo</th>
+                    <th>Categoría</th>
+                    <th>Consumo</th>
+                    <th>Meta</th>
+                    <th>Costo</th>
+                    <th>Responsable</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="recordsBody"></tbody>
+              </table>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="section-reportes" class="section">
+        <div class="reports-grid">
+          <article class="card">
+            <div class="card-head">
+              <h3>Resumen gerencial</h3>
+              <p>Lectura ejecutiva del comportamiento energético</p>
+            </div>
+            <div id="summaryBox" class="summary-box"></div>
+          </article>
+
+          <article class="card chart-card">
+            <div class="card-head">
+              <h3>Top áreas con mayor consumo</h3>
+              <p>Priorización para revisión</p>
+            </div>
+            <div class="chart-box"><canvas id="topAreasChart"></canvas></div>
+          </article>
+        </div>
+
+        <footer class="footer">Desarrollado por <strong>ASERFINTEC (ASFT)</strong> · Energy Save Control</footer>
+      </section>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
